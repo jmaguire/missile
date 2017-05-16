@@ -49,6 +49,8 @@ def get_cd(bc=MK21_BC, mass=MK21_MASS, radius=MK21_RADIUS):
 
 
 def get_drag(velocity, altitude):
+    if altitude > ATMOSPHERE:
+        return 0
     velocity, altitude = float(velocity), float(altitude)
     density = DENSITIES.get(
         altitude, DENSITIES[min(DENSITIES.keys(),
@@ -66,11 +68,8 @@ def get_gravitational_acceleration(altitude):
 
 
 def get_acceleration(altitude, velocity):
-    if altitude > ATMOSPHERE:
-        return get_gravitational_acceleration(altitude)
-    else:
-        return get_drag(velocity=velocity, altitude=altitude) + \
-            get_gravitational_acceleration(altitude)
+    return get_drag(velocity=velocity, altitude=altitude) + \
+        get_gravitational_acceleration(altitude)
 
 
 def calc_reenty(altitude, velocity=0.0, dt=.01, target_altitude=0.0):
