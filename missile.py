@@ -8,10 +8,68 @@ ATMOSPHERE = 100000.00
 GOLDEN_RATIO = (math.sqrt(5) + 1) / 2
 MACH_RATIO_SEA_LEVEL = 0.00291545
 
+# MK21 stats
+MK21_MASS = 270
+MK21_RADIUS = .28
+MK21_BC = 150000
+MK21_CD = 0.005739795918367346
+# Warhead defaults
+MASS = MK21_MASS
+RADIUS = MK21_RADIUS
+BC = MK21_BC
+CD = MK21_CD
+
+
+DENSITIES = {
+    0: 12.25,
+    1000: 11.12,
+    2000: 10.07,
+    3000: 9.093,
+    4000: 8.194,
+    5000: 7.364,
+    6000: 6.601,
+    7000: 5.9,
+    8000: 5.258,
+    9000: 4.671,
+    10000: 4.135,
+    15000: 1.948,
+    20000: 0.8891,
+    25000: 0.4008,
+    30000: 0.1841,
+    40000: 0.03996,
+    50000: 0.01027,
+    60000: 0.003097,
+    70000: 0.0008283,
+    80000: 0.0001846}
+
+
+def get_cd(bc=MK21_BC, mass=MK21_MASS, radius=MK21_RADIUS):
+    diameter = 2.0 * float(radius)
+    return float(mass) / (float(diameter ** 2.0) * float(bc))
+
+
+def get_drag(velocity, altitude):
+    velocity, altitude = float(velocity), float(altitude)
+    density = DENSITIES.get(
+        altitude, DENSITIES[min(DENSITIES.keys(),
+                                key=lambda k: abs(k - altitude))])
+    cd = MK21_CD
+    area = math.pi * float(RADIUS) ** 2
+    force = 1.0 * .5 * density * cd * area * velocity**2
+    a = float(force) / float(MASS)
+    return a
+
 
 def get_gravitational_acceleration(altitude):
     altitude = float(altitude)
     return -1.0 * float(G * MASS_E) / float(RADIUS_E + altitude)**2.0
+
+
+def get_acceleration(altitude, velocity):
+    if altitude > ATMOSPHERE:
+        return get_gravitational_acceleration(altitude)
+    else:
+        return get_drag(velocity=velocity, altitude=altitude)
 
 
 def calc_reenty(altitude, velocity=0.0, dt=.01, target_altitude=0.0):
@@ -24,11 +82,13 @@ def calc_reenty(altitude, velocity=0.0, dt=.01, target_altitude=0.0):
     # repeat until at target
     while(altitude >= target_altitude):
 
-        a_g = get_gravitational_acceleration(altitude)
-        velocity = velocity + a_g * dt
-        altitude = altitude + velocity * dt + 1.0 / 2.0 * a_g * dt**2.0
+        a = get_acceleration(altitude, velocity)
+        velocity = velocity + a * dt
+        altitude = altitude + velocity * dt + 1.0 / 2.0 * a * dt**2.0
         total_time = total_time + dt
         sample += 1
+        if sample % 50 == 0:
+            print "Altitude:", altitude, "Accel:", a, "Velocity:", velocity
 
     return {"time": total_time, "velocity": velocity}
 
@@ -70,11 +130,13 @@ def altitude_from_time(time_seconds):
 
 
 # Determine altitude for given reentry time
+'''
 target_time = 30 / 2.0 * 60.0
 altitude_guess = altitude_from_time(target_time)
 altitude_guess_km = altitude_guess / 1000.0
 print "Target Time (s)", target_time, \
     "Required altitude (km)", altitude_guess_km
+'''
 
 # Guess reentry times and speeds
 altitude = 2150e3
@@ -94,4 +156,4 @@ to_ground_time = round(to_ground["time"], 2)
 print "Reentry time (s)", to_atmosphere_time, \
     "Reentry speed (mach)", to_atmosphere_speed
 print "Impact time (s)", to_ground_time, \
-    "Reentry speed (mach)", to_ground_speed
+    "Impact speed (mach)", to_ground_speed
