@@ -29,19 +29,7 @@ def calc_reenty(altitude, velocity=0.0, dt=.01, target_altitude=0.0):
         altitude = altitude + velocity * dt + 1.0 / 2.0 * a_g * dt**2.0
         total_time = total_time + dt
         sample += 1
-        '''
-        if sample % SAMPLE_TO_PRINT == 0:
-            print "Acceleration (m/s^2)", a_g, "Altitude", altitude, \
-                "Velocity (m/s)", velocity, "Time Elapsed (s)", total_time, \
-                "Time Elapsed (min)", total_time / 60.0
-        '''
-    # we're done! print results
-    '''
-    print "Boom", "Took", sample, "samples. Missile at", altitude, "m"
-    print "Acceleration (m/s^2)", a_g, "Altitude", altitude, \
-        "Velocity (m/s)", velocity, "Time Elapsed (s)", total_time, \
-        "Time Elapsed (min)", total_time / 60.0
-    '''
+
     return {"time": total_time, "velocity": velocity}
 
 
@@ -85,7 +73,7 @@ def altitude_from_time(time_seconds):
 target_time = 30 / 2.0 * 60.0
 altitude_guess = altitude_from_time(target_time)
 altitude_guess_km = altitude_guess / 1000.0
-print "Target Time(s)", target_time, \
+print "Target Time (s)", target_time, \
     "Required altitude (km)", altitude_guess_km
 
 # Guess reentry times and speeds
@@ -103,7 +91,7 @@ to_ground_speed = round(to_ground["velocity"] * MACH_RATIO_SEA_LEVEL, 2)
 to_ground_time = round(to_ground["time"], 2)
 
 
-print "Reentry time", to_atmosphere_time, \
-    "Reentry speed", to_atmosphere_speed
-print "Impact time", to_ground_time, \
-    "Reentry speed", to_ground_speed
+print "Reentry time (s)", to_atmosphere_time, \
+    "Reentry speed (mach)", to_atmosphere_speed
+print "Impact time (s)", to_ground_time, \
+    "Reentry speed (mach)", to_ground_speed
