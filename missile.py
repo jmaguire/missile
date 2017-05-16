@@ -131,17 +131,17 @@ def altitude_from_time(time_seconds):
 
 
 # Determine altitude for given reentry time
-'''
+
 target_time = 30 / 2.0 * 60.0
 altitude_guess = altitude_from_time(target_time)
 altitude_guess_km = altitude_guess / 1000.0
 print "Target Time (s)", target_time, \
     "Required altitude (km)", altitude_guess_km
-'''
+
 
 # Guess reentry times and speeds
-altitude = 1207e3
-print "Altitude", altitude
+altitude = 2150e3
+print "Altitude (km)", round(altitude / 1000.0, 0)
 to_atmosphere = calc_reenty(altitude, 0.0, .01, ATMOSPHERE)
 to_atmosphere_speed = round(
     to_atmosphere["velocity"] *
@@ -158,4 +158,4 @@ print "Reentry time (s)", to_atmosphere_time, \
     "Reentry speed (mach)", to_atmosphere_speed
 print "Impact time (s)", to_ground_time, \
     "Impact speed (mach)", to_ground_speed, \
-    "Estimated flight time (min)", to_ground_time * 3.0 / 60.0
+    "Estimated flight time (min)", to_ground_time * 2.0 / 60.0
