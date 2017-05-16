@@ -69,7 +69,8 @@ def get_acceleration(altitude, velocity):
     if altitude > ATMOSPHERE:
         return get_gravitational_acceleration(altitude)
     else:
-        return get_drag(velocity=velocity, altitude=altitude)
+        return get_drag(velocity=velocity, altitude=altitude) + \
+            get_gravitational_acceleration(altitude)
 
 
 def calc_reenty(altitude, velocity=0.0, dt=.01, target_altitude=0.0):
@@ -87,9 +88,10 @@ def calc_reenty(altitude, velocity=0.0, dt=.01, target_altitude=0.0):
         altitude = altitude + velocity * dt + 1.0 / 2.0 * a * dt**2.0
         total_time = total_time + dt
         sample += 1
+        '''
         if sample % 50 == 0:
             print "Altitude:", altitude, "Accel:", a, "Velocity:", velocity
-
+        '''
     return {"time": total_time, "velocity": velocity}
 
 
@@ -139,7 +141,7 @@ print "Target Time (s)", target_time, \
 '''
 
 # Guess reentry times and speeds
-altitude = 2150e3
+altitude = 1207e3
 print "Altitude", altitude
 to_atmosphere = calc_reenty(altitude, 0.0, .01, ATMOSPHERE)
 to_atmosphere_speed = round(
@@ -156,4 +158,5 @@ to_ground_time = round(to_ground["time"], 2)
 print "Reentry time (s)", to_atmosphere_time, \
     "Reentry speed (mach)", to_atmosphere_speed
 print "Impact time (s)", to_ground_time, \
-    "Impact speed (mach)", to_ground_speed
+    "Impact speed (mach)", to_ground_speed, \
+    "Estimated flight time (min)", to_ground_time * 3.0 / 60.0
